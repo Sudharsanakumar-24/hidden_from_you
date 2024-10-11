@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="/loginstyle.css"> 
+</head>
+<body>
+    <div class="form-container">
+        <h2>Sign Up</h2>
+        <form id="signup-form" action="/signup" method="post">
+            <div class="form-group">
+                <label for="username">Username: </label>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required autocomplete="off">
+            </div>
+            <button type="button" id="requestPassword">Request Password</button>
+        </form>
+        <p>Already have an account? <a href="/login">Login</a></p>
+    </div>
+
+    <script>
+        document.getElementById('requestPassword').addEventListener('click', async () => {
+            const username = document.getElementById('username').value.trim(); // Get username value
+            if (!username) {
+                alert('Please enter a username.'); // Check if username is empty
+                return;
+            }
+
+            try {
+                const response = await fetch('/generate-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username }), 
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert(`Your traversal string is: ${data.traversalString}\nYour generated password is: ${data.password}`);
+                    // Optionally submit the form after generating the password
+                    document.getElementById('signup-form').submit();
+                } else {
+                    alert(data.error || 'There was a problem generating your password.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('There was a problem generating your password.');
+            }
+        });
+    </script>        
+</body>
+</html>
